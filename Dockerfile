@@ -6,7 +6,7 @@ FROM node:16-alpine AS builder
 WORKDIR /app
 
 # Copy package.json and package-lock.json files
-COPY package.json package-lock.json ./
+COPY package.json ./
 
 # Install dependencies
 RUN npm install --ignore-scripts
@@ -26,6 +26,7 @@ WORKDIR /app
 # Copy the build output and package.json
 COPY --from=builder /app/build ./build
 COPY --from=builder /app/package.json ./
+COPY --from=builder /app/node_modules ./node_modules
 
 # Set environment variables
 ENV GITLAB_API_URL=https://gitlab.com/api/v4

@@ -511,10 +511,10 @@ async function getMergeRequest(
   mergeRequestIid: number
 ): Promise<GitLabMergeRequest> {
   const url = new URL(
-    `${GITLAB_API_URL}/api/v4/projects/${encodeURIComponent(
-      projectId
-    )}/merge_requests/${mergeRequestIid}`
+    `${GITLAB_API_URL}/api/v4/projects/${encodeURIComponent(projectId)}/merge_requests/${mergeRequestIid}`
   );
+
+	console.log('URL: ', url)
 
   const response = await fetch(url.toString(), {
     headers: DEFAULT_HEADERS,
@@ -582,11 +582,14 @@ async function createNote(
   body: string
 ): Promise<any> {
   // ⚙️ 응답 타입은 GitLab API 문서에 따라 조정 가능
+	const type = noteableType === 'issue' ? 'issues' : 'merge_requests'
   const url = new URL(
-    `${GITLAB_API_URL}/projects/${encodeURIComponent(
+    `${GITLAB_API_URL}/api/v4/projects/${encodeURIComponent(
       projectId
-    )}/${noteableType}/${noteableIid}/notes`
+    )}/${type}/${noteableIid}/notes`
   );
+
+	console.log('createNote URL: ', url, 'POST')
 
   const response = await fetch(url.toString(), {
     method: "POST",

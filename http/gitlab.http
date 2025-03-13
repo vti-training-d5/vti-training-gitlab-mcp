@@ -1,0 +1,12 @@
+### Get merge request
+GET https://git.vti.com.vn/api/v4/projects/D5-Project%2Fmri%2Fdemo-review-code-server/merge_requests/2
+Authorization: Bearer gZzJ-eNhwE3DvLVGDPn5
+
+### Create note on merge request
+POST https://git.vti.com.vn/api/v4/projects/4722/merge_requests/2/notes
+Authorization: Bearer gZzJ-eNhwE3DvLVGDPn5
+Content-Type: application/json
+
+{
+  "body": "Test note"
+}
