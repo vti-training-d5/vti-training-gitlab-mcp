@@ -2,9 +2,12 @@
 - https://docs.gitlab.com/api/discussions/#create-a-new-thread-in-the-merge-request-diff
 
 #### Lib
-- https://github.com/jenkinsci/violation-comments-to-gitlab-plugin/tree/master
-- https://www.npmjs.com/package/violation-comments-to-gitlab-command-line
-- https://github.com/tomasbjerre/violations-lib
+[//]: # (- https://github.com/jenkinsci/violation-comments-to-gitlab-plugin/tree/master)
+[//]: # (- https://www.npmjs.com/package/violation-comments-to-gitlab-command-line)
+[//]: # (- https://github.com/tomasbjerre/violations-lib)
+- https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/blob/master/src/main/java/se/bjurr/violations/comments/gitlab/lib/GitLabCommentsProvider.java
+- https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/blob/master/src/main/java/se/bjurr/violations/comments/gitlab/lib/ViolationCommentsToGitLabApi.java
+- https://github.com/petereon/diffparser
 
 #### Sample payload (Web)
 

@@ -14,7 +14,8 @@ run () {
    #        "GITLAB_API_URL",
    #        "gitlab_mcp"
    docker run -it --rm gitlab_mcp
-
 }
+
+
 
 "$@"
