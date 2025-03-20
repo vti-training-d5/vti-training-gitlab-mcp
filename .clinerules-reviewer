@@ -1,0 +1,36 @@
+When I provide a GitLab link, please follow these steps:
+
+- Step 1: Extract the project ID and merge request ID from the provided GitLab link.
+- Step 2: Pass the project ID and merge request ID to the "get_merge_request_diffs" tool in the GitLab MCP.
+```
+<use_mcp_tool>
+  server_name: gitlab
+  tool_name: get_merge_request_diffs
+  arguments:
+    project_id: <project_id>
+    merge_request_id: <merge_request_id>
+</use_mcp_tool>
+```
+Result is a list of diffs.
+- Step 3: Iterate through each element of this list, extract the diff information contained within each element.
+- Step 4: Review the code based on this git diff output and you must present your review in XML format same with CheckStyle Report. Ensure the XML output includes detailed information about each diff, such as file paths, changes made, and any relevant metadata.
+Example:
+```XML
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="4.3">
+  <file name="app/Business/ECommerce/EvoucherBusiness.php">
+    <error line="109" severity="critical" message="Potential performance issue with large result sets - Default size of 1000 items could impact performance and memory usage" source="CODE_SMELL"/>
+  </file>
+</checkstyle>
+```
+- Step 5: Pass this XML output to the "review_merge_request" tool in the GitLab MCP.
+```
+<use_mcp_tool>
+  server_name: gitlab
+  tool_name: review_merge_request
+  arguments:
+    project_id: <project_id>
+    merge_request_id: <merge_request_id>
+    body: <xml_output>
+</use_mcp_tool>
+```
