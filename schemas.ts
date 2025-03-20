@@ -397,6 +397,10 @@ export const CreateNoteSchema = z.object({
   body: z.string().describe("Note content"),
 });
 
+export const ReviewMergeRequestSchema = GetMergeRequestSchema.extend({
+  body: z.string().describe("Review content"),
+});
+
 // Export types
 export type GitLabAuthor = z.infer<typeof GitLabAuthorSchema>;
 export type GitLabFork = z.infer<typeof GitLabForkSchema>;
