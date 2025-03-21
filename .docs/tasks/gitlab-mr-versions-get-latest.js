@@ -5,7 +5,7 @@ const GITLAB_API_TOKEN = process.env.GITLAB_API_TOKEN;
 
 args = process.argv.slice(2);
 
-if (args.length < 1) {
+if (args.length <= 1) {
     console.log('Usage: gitlab-mr-versions-get.js <project-id> <merge-request-id>');
     process.exit(1);
 }

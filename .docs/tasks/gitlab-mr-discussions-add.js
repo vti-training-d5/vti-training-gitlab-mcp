@@ -5,7 +5,7 @@ const GITLAB_API_TOKEN = process.env.GITLAB_API_TOKEN;
 
 args = process.argv.slice(2);
 
-if (args.length < 8) {
+if (args.length <= 8) {
     console.log('Usage: gitlab-mr-discussions-add.js <project-id> <merge-request-id> <base_sha> <head_sha> <start_sha> <old_path> <new_path> <new_line> <body>');
     process.exit(1);
 }

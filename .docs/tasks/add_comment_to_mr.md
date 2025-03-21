@@ -51,8 +51,8 @@ Requirements:
  export GITLAB_API_TOKEN="<your secret GitLab Access Toekn>"
 export GITLAB_API_URL="https://git.vti.com.vn/api/v4"
 # set Merge Request info
-myGitlabProjectId="1784"
-myGitlabMergeRequestIid="57"
+myGitlabProjectId="<The ID of the project>"
+myGitlabMergeRequestIid="<The internal ID of the merge request>"
 # get latest diff version of MR
 myGitlabMrVersionLatest=$(./gitlab-mr-versions-get-latest.js "${myGitlabProjectId}" "${myGitlabMergeRequestIid}")
 myGitlabMrShaBase=$(printf "%s" "${myGitlabMrVersionLatest}" | jq -r ".base_commit_sha")
