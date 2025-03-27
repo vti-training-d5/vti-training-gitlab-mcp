@@ -10,7 +10,7 @@ import fetch from "node-fetch";
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { fileURLToPath } from "url";
-import { dirname, resolve } from "path";
+import util from "util";
 import {
   GitLabForkSchema,
   GitLabReferenceSchema,
@@ -52,7 +52,11 @@ import {
   type FileOperation,
   type GitLabMergeRequestDiff,
   CreateNoteSchema,
+  ReviewMergeRequestSchema,
 } from "./schemas.js";
+import fs from "fs";
+import path from "path";
+import { exec } from "child_process";
 
 const server = new Server(
   {
@@ -601,6 +605,56 @@ async function createNote(
   return await response.json(); // ⚙️ 응답 타입은 GitLab API 문서에 따라 조정 가능, 필요하면 스키마 정의
 }
 
+async function reviewMergeRequest(
+  projectId: string,
+  mergeRequestIid: number,
+  body: string
+) {
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  const reportsDir = path.join(__dirname, 'reports');
+  // const reportFilePath = path.join(reportsDir, 'sonar-report.json');
+  const reportFilePath = path.join(reportsDir, 'checkstyle.xml');
+
+  // Create reports directory if it doesn't exist
+  if (!fs.existsSync(reportsDir)) {
+      fs.mkdirSync(reportsDir, { recursive: true });
+      console.log(`Directory created: ${reportsDir}`);
+  }
+
+  // Write data to violations file
+  fs.writeFile(reportFilePath, body, (err) => {
+      if (err) {
+          console.error('Error writing violations file:', err);
+          throw new Error(`Error writing violations file: ${err}`);
+      } else {
+          console.log(`Violations file created successfully at ${reportFilePath}`);
+      }
+  });
+
+  // const command = `npx violation-comments-to-gitlab-command-line -gu ${GITLAB_API_URL} -at ${GITLAB_PERSONAL_ACCESS_TOKEN} -pi ${projectId} -mr-iid ${mergeRequestIid} -v "SONAR" "." ".*reports/sonar-report\.json$" "Sonar"`;
+  const command = `npx violation-comments-to-gitlab-command-line -gu ${GITLAB_API_URL} -at ${GITLAB_PERSONAL_ACCESS_TOKEN} -pi ${projectId} -mr-iid ${mergeRequestIid} -v "CHECKSTYLE" "${__dirname}" ".*reports/checkstyle\.xml$" "CheckStyle"`;
+
+  const execPromise = util.promisify(exec);
+
+  try {
+    const { stdout, stderr } = await execPromise(command);
+    if (stderr) {
+      console.error(`Error: ${stderr}`);
+      throw new Error(`Error: ${stderr}`);
+    }
+    
+    return await Response.json(stdout);
+  } catch (error) {
+    throw new Error(`Error: ${error}`);
+  } finally {
+    fs.unlink(reportFilePath, (err) => {
+      if (err) {
+        console.error('Error deleting violations file:', err);
+      }
+    });
+  }
+}
+
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
@@ -671,6 +725,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         name: "create_note",
         description: "Create a new note (comment) to an issue or merge request",
         inputSchema: zodToJsonSchema(CreateNoteSchema),
+      },
+      {
+        name: "review_merge_request",
+        description: "Review a merge request",
+        inputSchema: zodToJsonSchema(ReviewMergeRequestSchema),
       },
     ],
   };
@@ -853,6 +912,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           }
           throw error;
         }
+      }
+
+      case "review_merge_request": {
+        const args = ReviewMergeRequestSchema.parse(request.params.arguments);
+        const { project_id, merge_request_iid, body } = args;
+        const review = await reviewMergeRequest(project_id, merge_request_iid, body);
+        return {
+          content: [{ type: "text", text: JSON.stringify(review, null, 2) }],
+        };
       }
 
       default:
